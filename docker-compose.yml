@@ -1,0 +1,39 @@
+---
+version: "3.8"
+
+services:
+  api:
+    depends_on:
+      - db
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    # env_file:
+    #   - server/settings.env
+    environment:
+      - ConnectionStrings__DefaultConnection=User ID =tokdok;Password=super_strong_password;Server=db;Port=5432;Database=tokdok; Integrated Security=true;Pooling=true;
+      # - ASPNETCORE_URLS=http://+:80
+    image: tokdok/api
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - api:/etc/api
+      - logs:/var/log/api
+
+  db:
+    environment:
+      POSTGRES_USER: "tokdok"
+      POSTGRES_PASSWORD: "super_strong_password"
+      POSTGRES_DB: "tokdok"
+      PGDATA: /var/lib/postgresql/data/tokdok
+    ports:
+      - "5433:5432"
+    image: postgres:16
+    restart: always
+    volumes:
+      - ./database/postgresql/data:/var/lib/postgresql/data
+
+volumes:
+  api:
+  logs:
