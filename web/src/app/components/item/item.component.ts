@@ -1,10 +1,11 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
-import { Todo } from "./../models/todo";
+import { CommonModule } from '@angular/common';
+import { Todo } from "../../models/todo";
 
 @Component({
   selector: 'app-item',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './item.component.html',
   styleUrl: './item.component.css'
 })
@@ -14,10 +15,17 @@ export class ItemComponent {
 
   @Input() item!: Todo;
   @Output() remove = new EventEmitter<Todo>();
+  @Output() update = new EventEmitter<Todo>();
 
-  saveItem(description: string) {
+  saveDescription(description: string) {
     if (!description) return;
     this.editable = false;
     this.item.title = description;
+    this.update.emit(this.item);
+  }
+
+  changeStatus() {
+    this.item.isComplete = !this.item.isComplete;
+    this.update.emit(this.item);
   }
 }

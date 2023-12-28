@@ -11,7 +11,7 @@ services:
     # env_file:
     #   - server/settings.env
     environment:
-      - ConnectionStrings__DefaultConnection=User ID =tokdok;Password=super_strong_password;Server=db;Port=5432;Database=tokdok; Integrated Security=true;Pooling=true;
+      - ConnectionStrings__DefaultConnection=User ID=tokdok;Password=super_strong_password;Server=db;Port=5432;Database=tokdok;
       # - ASPNETCORE_URLS=http://+:80
     image: tokdok/api
     restart: always
