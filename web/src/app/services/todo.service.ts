@@ -28,6 +28,10 @@ export class TodoService {
     return this.httpClient.put<Todo>(this.API_URL + `/${id}`, body);
   }
 
+  patchTodo(id: number, body: Todo): Observable<Todo> {
+    return this.httpClient.patch<Todo>(this.API_URL + `/${id}`, body);
+  }
+
   deleteTodo(id: number): Observable<Object> {
     return this.httpClient.delete<Object>(this.API_URL + `/${id}`);
   }

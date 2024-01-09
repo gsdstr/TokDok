@@ -73,6 +73,45 @@ namespace api.Controllers
             return NoContent();
         }
 
+// TODO
+        // PATCH: api/Todos/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // [HttpPatch("{id}")]
+        // public async Task<IActionResult> PatchTodo(int id, Todo req)
+        // {
+        //     if (id != req.Id)
+        //     {
+        //         return BadRequest();
+        //     }
+
+        //     var data = JsonConvert.DeserializeObject<Todo>(req);
+        //     var todo = await _context.Todos.FindAsync(id);
+        //     if (todo == null)
+        //     {
+        //         return NotFound();
+        //     }
+        //     _context.Entry(todo).State = EntityState.Modified;
+        //     _context.Entry(todo).CurrentValues.SetValues(req);// = EntityState.Modified;
+
+        //     try
+        //     {
+        //         await _context.SaveChangesAsync();
+        //     }
+        //     catch (DbUpdateConcurrencyException)
+        //     {
+        //         if (!TodoExists(id))
+        //         {
+        //             return NotFound();
+        //         }
+        //         else
+        //         {
+        //             throw;
+        //         }
+        //     }
+
+        //     return NoContent();
+        // }
+
         // POST: api/Todos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
