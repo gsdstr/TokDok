@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace api.Models
 {
-    public class Todo
+    public class TodoView
     {
         public int Id { get; set; }
 
@@ -11,6 +11,6 @@ namespace api.Models
 
         public bool IsComplete { get; set; }
 
-        public List<Tag> Tags { get; set; } = [];
+        public string Tags { get; set; } = "";
     }
 }

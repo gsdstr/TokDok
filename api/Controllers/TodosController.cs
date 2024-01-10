@@ -23,35 +23,77 @@ namespace api.Controllers
 
         // GET: api/Todos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Todo>>> GetTodos()
+        public async Task<ActionResult<IEnumerable<TodoView>>> GetTodos()
         {
-            return await _context.Todos.ToListAsync();
+            var todo = await _context.Todos.Include(e=> e.Tags).ToListAsync();
+            return todo.ConvertAll(new Converter<Todo, TodoView>(TodoToTodoView));
+        }
+
+        private TodoView TodoToTodoView(Todo input)
+        {
+            var tags = string.Join(" ", input.Tags.Select(t => {return t.Title;}));
+            return new TodoView
+            {
+                Id = input.Id,
+                Title = input.Title,
+                IsComplete = input.IsComplete,
+                Tags = tags
+            };
+        }
+
+        private async Task<Todo> TodoViewToTodoAsync(TodoView input)
+        {
+            var tagsInput = input.Tags.Split(" ");// string.Join(" ", .Select(t => {return t.Title;}));
+            List<Tag> tags = [];
+            //TODO add AddIfNotExists in DbContextExtensions
+            foreach ( string tagTitle in tagsInput )
+            {
+                Tag? tag = await _context.Tag.FirstOrDefaultAsync(m => m.Title == tagTitle);
+                // doesn't exist - firstOrDefault() returns default
+                if ( tag == null || object.Equals(tag, default(Tag)))               
+                {
+                    tag = new Tag
+                    {
+                        Title = tagTitle
+                    };
+                }
+                _context.Tag.Add(tag);
+                tags.Add( tag );
+            }
+            return new Todo
+            {
+                Id = input.Id,
+                Title = input.Title,
+                IsComplete = input.IsComplete,
+                Tags = tags
+            };   
         }
 
         // GET: api/Todos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Todo>> GetTodo(int id)
+        public async Task<ActionResult<TodoView>> GetTodo(int id)
         {
-            var todo = await _context.Todos.FindAsync(id);
+            var todo = await _context.Todos.Include(e=> e.Tags).FirstOrDefaultAsync(e => e.Id == id);
 
             if (todo == null)
             {
                 return NotFound();
             }
 
-            return todo;
+            return TodoToTodoView(todo);
         }
 
         // PUT: api/Todos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodo(int id, Todo todo)
+        public async Task<IActionResult> PutTodo(int id, TodoView input)
         {
-            if (id != todo.Id)
+            if (id != input.Id)
             {
                 return BadRequest();
             }
 
+            var todo = await TodoViewToTodoAsync(input);
             _context.Entry(todo).State = EntityState.Modified;
 
             try
@@ -115,8 +157,9 @@ namespace api.Controllers
         // POST: api/Todos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Todo>> PostTodo(Todo todo)
+        public async Task<ActionResult<Todo>> PostTodo(TodoView input)
         {
+            var todo = await TodoViewToTodoAsync(input);
             _context.Todos.Add(todo);
             await _context.SaveChangesAsync();
 
