@@ -37,7 +37,9 @@ namespace api.Controllers
                 Id = input.Id,
                 Title = input.Title,
                 IsComplete = input.IsComplete,
-                Tags = tags
+                Tags = tags,
+                Reminder = input.Reminder?.ToUniversalTime()
+                         .ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'")
             };
         }
 
@@ -64,7 +66,8 @@ namespace api.Controllers
                 Id = input.Id,
                 Title = input.Title,
                 IsComplete = input.IsComplete,
-                Tags = tags
+                Tags = tags,
+                Reminder = input.Reminder == null ? null : DateTimeOffset.Parse(input.Reminder).UtcDateTime
             };   
         }
 

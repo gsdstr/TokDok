@@ -12,5 +12,7 @@ namespace api.Models
         public bool IsComplete { get; set; }
 
         public List<Tag> Tags { get; set; } = [];
+
+        public DateTime? Reminder { get; set; }
     }
 }
