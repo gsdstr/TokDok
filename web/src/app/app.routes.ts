@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { TasksComponent } from './pages/tasks/tasks.component';
 import { HomeComponent } from './pages/home/home.component';
 import { TagsComponent } from './pages/tags/tags.component';
+import { RemindersComponent } from './pages/reminders/reminders.component';
 
 export const routes: Routes = [
   {
@@ -14,7 +15,7 @@ export const routes: Routes = [
   },
   {
     path: 'reminders',
-    component: HomeComponent
+    component: RemindersComponent
   },
   {
     path: '**',

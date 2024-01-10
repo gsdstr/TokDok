@@ -3,4 +3,5 @@ export interface Todo {
   title: string;
   isComplete: boolean;
   tags: string[];
+  reminder: Date
 }
