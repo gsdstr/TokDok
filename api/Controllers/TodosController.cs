@@ -31,7 +31,7 @@ namespace api.Controllers
 
         private TodoView TodoToTodoView(Todo input)
         {
-            var tags = string.Join(" ", input.Tags.Select(t => {return t.Title;}));
+            var tags = input.Tags.Select(t => {return t.Title;}).ToArray();
             return new TodoView
             {
                 Id = input.Id,
@@ -43,10 +43,9 @@ namespace api.Controllers
 
         private async Task<Todo> TodoViewToTodoAsync(TodoView input)
         {
-            var tagsInput = input.Tags.Split(" ");// string.Join(" ", .Select(t => {return t.Title;}));
             List<Tag> tags = [];
             //TODO add AddIfNotExists in DbContextExtensions
-            foreach ( string tagTitle in tagsInput )
+            foreach ( string tagTitle in input.Tags )
             {
                 Tag? tag = await _context.Tag.FirstOrDefaultAsync(m => m.Title == tagTitle);
                 // doesn't exist - firstOrDefault() returns default
@@ -56,8 +55,8 @@ namespace api.Controllers
                     {
                         Title = tagTitle
                     };
+                    _context.Tag.Add(tag);
                 }
-                _context.Tag.Add(tag);
                 tags.Add( tag );
             }
             return new Todo

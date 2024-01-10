@@ -1,4 +1,4 @@
-<h2 class="content-block">Tasks</h2>
+<h2 class="content-block">Notes</h2>
 
 <dx-data-grid
   class="dx-card wide-card"
@@ -20,18 +20,30 @@
     [(changes)]="changes"
     [(editRowKey)]="editRowKey"
   ></dxo-editing>
-  
+
   <dxo-load-panel [enabled]="true"></dxo-load-panel>
   <dxo-paging [pageSize]="10"></dxo-paging>
   <dxo-pager [showPageSizeSelector]="true" [showInfo]="true"></dxo-pager>
   <!-- <dxo-filter-row [visible]="true"></dxo-filter-row> -->
 
   <dxi-column dataField="id" [width]="90" [hidingPriority]="2" [allowEditing]="false"> </dxi-column>
+  <dxi-column dataField="isComplete" caption="Completion" [hidingPriority]="0">
+  </dxi-column>
   <dxi-column
     dataField="title"
     [width]="190"
     caption="Subject"
     [hidingPriority]="8"
+  >
+  </dxi-column>
+  <dxi-column
+    dataField="tags"
+    caption="Tags"
+    [width]="200"
+    [allowSorting]="false"
+    editCellTemplate="tagBoxEditor"
+    [cellTemplate]="cellTemplate"
+    [calculateFilterExpression]="calculateFilterExpression"
   >
   </dxi-column>
   <!-- <dxi-column
@@ -46,6 +58,20 @@
     name="Priority"
     [hidingPriority]="1">
   </dxi-column> -->
-  <dxi-column dataField="isComplete" caption="Completion" [hidingPriority]="0">
-  </dxi-column>
+
+  <div *dxTemplate="let cellInfo of 'tagBoxEditor'">
+    <dx-tag-box
+      [dataSource]="tags"
+      [showSelectionControls]="true"
+      [maxDisplayedTags]="3"
+      [showMultiTagOnly]="false"
+      [inputAttr]="{ 'aria-label': 'Name' }"
+      applyValueMode="useButtons"
+      [searchEnabled]="true"
+      (onValueChanged)="cellInfo.setValue($event.value)"
+      (onSelectionChanged)="cellInfo.component.updateDimensions()"
+    >
+    </dx-tag-box>
+  </div>
+
 </dx-data-grid>

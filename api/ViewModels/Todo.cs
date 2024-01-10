@@ -11,6 +11,6 @@ namespace api.Models
 
         public bool IsComplete { get; set; }
 
-        public string Tags { get; set; } = "";
+        public string[] Tags { get; set; } = [];
     }
 }

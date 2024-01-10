@@ -1,25 +1,25 @@
 import { Component } from '@angular/core';
-import { DxDataGridModule, DxFormModule, DxLoadPanelModule } from 'devextreme-angular';
+import { DxDataGridModule, DxFormModule, DxLoadPanelModule, DxTagBoxModule
+    } from 'devextreme-angular';
 import 'devextreme/data/odata/store';
-import { TodoService } from '../../services/todo.service';
-import { Todo } from '../../models/todo';
-import ArrayStore from 'devextreme/data/array_store';
-import DataSource from 'devextreme/data/data_source';
-import { Observable } from 'rxjs/internal/Observable';
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs/internal/Subscription';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import CustomStore from 'devextreme/data/custom_store';
+import { TodoService } from '../../services/todo.service';
+import { Todo } from '../../models/todo';
+import { TagService } from '../../services/tag.service';
+import { Tag } from '../../models/tag';
 
 @Component({
   templateUrl: 'tasks.component.html',
   standalone: true,
-  imports: [DxDataGridModule, DxFormModule, CommonModule, DxLoadPanelModule]
+  imports: [DxDataGridModule, DxFormModule, CommonModule, DxLoadPanelModule, DxTagBoxModule]
 })
 export class TasksComponent {
   dataSource: any;
   priority: any[];
 
+  tags: string[] = [];
   changes: any[] = [];
   updatedObject: any | null = null;
   editRowKey?: number | null = null;
@@ -28,7 +28,7 @@ export class TasksComponent {
   // allItems: Observable<Todo[]>;
   isLoading = false;
 
-  constructor(private readonly todoService: TodoService) {
+  constructor(private readonly todoService: TodoService, private readonly tagService: TagService) {
     const component = this;
     this.dataSource = new CustomStore({
       key: "id",
@@ -69,19 +69,18 @@ export class TasksComponent {
   }
 
   ngOnInit(): void {
-    //this.loadItems();
+    this.loadItems();
   }
 
   loadItems(){
-    // this.allItems = undefined;
-    // this.todoService.getAllTodo().subscribe((response: Todo[]) => {
-    //   console.log(response, 'res');
-
-    //   this.allItems = response;
-    // })
+    this.tags = [];
+    const component = this;
+    this.tagService.getAllTag().subscribe((response: Tag[]) => {
+      component.tags = response.map(t => t.title);
+    })
   }
 
-  onSaving(e: any) {
+  onSaving(e: any) { 
     const change = e.changes[0];
 
     // if(change) {
@@ -98,5 +97,21 @@ export class TasksComponent {
     }
     this.updatedObject = e.newData;
     console.log(e, 'onRowUpdating');
+  }
+
+  calculateFilterExpression(filterValue: any, selectedFilterOperation: any, target: any) {
+    if (target === 'search' && typeof (filterValue) === 'string') {
+      return [(this as any).dataField, 'contains', filterValue];
+    }
+    return function (rowData: any) {
+      return (rowData.AssignedEmployee || []).indexOf(filterValue) !== -1;
+    };
+  }
+
+  cellTemplate(container: any, options: any) {
+    const noBreakSpace = '\u00A0';
+    const text = (options.value || []).join(', ');
+    container.textContent = text || noBreakSpace;
+    container.title = text;
   }
 }

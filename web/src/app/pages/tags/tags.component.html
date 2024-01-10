@@ -1,0 +1,38 @@
+<h2 class="content-block">Tags</h2>
+
+<dx-data-grid
+  class="dx-card wide-card"
+  id="gridContainer"
+  [dataSource]="dataSource"
+  [showBorders]="false"
+  [focusedRowEnabled]="true"
+  [focusedRowIndex]="0"
+  [columnAutoWidth]="true"
+  [columnHidingEnabled]="true"
+  (onSaving)="onSaving($event)"
+  (onRowUpdating)="onRowUpdating($event)"
+>
+  <dxo-editing
+    mode="row"
+    [allowAdding]="true"
+    [allowDeleting]="true"
+    [allowUpdating]="true"
+    [(changes)]="changes"
+    [(editRowKey)]="editRowKey"
+  ></dxo-editing>
+
+  <dxo-load-panel [enabled]="true"></dxo-load-panel>
+  <dxo-paging [pageSize]="10"></dxo-paging>
+  <dxo-pager [showPageSizeSelector]="true" [showInfo]="true"></dxo-pager>
+  <!-- <dxo-filter-row [visible]="true"></dxo-filter-row> -->
+
+  <dxi-column dataField="id" [width]="90" [hidingPriority]="2" [allowEditing]="false"> </dxi-column>
+  <dxi-column
+    dataField="title"
+    [width]="190"
+    caption="Subject"
+    [hidingPriority]="8"
+  >
+  </dxi-column>
+  
+</dx-data-grid>
