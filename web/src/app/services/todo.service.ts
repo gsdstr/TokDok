@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, Type } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Todo } from '../models/todo';
@@ -7,6 +7,7 @@ import { Todo } from '../models/todo';
   providedIn: 'root'
 })
 export class TodoService {
+
   private readonly API_URL = 'http://localhost:8080/api/Todos';
   constructor(
     private readonly httpClient: HttpClient
@@ -14,6 +15,30 @@ export class TodoService {
 
   getAllTodo(): Observable<Todo[]> {
     return this.httpClient.get<Todo[]>(this.API_URL);
+  }
+
+  getTodo(startDate: Date, endDate: Date): Observable<Todo[]> {
+
+    function formatDate(date: Date) {
+      const offset = date.getTimezoneOffset()
+      // var d = new Date(date.getTime() - (offset*60*1000));
+      //     month = '' + (d.getMonth() + 1),
+      //     day = '' + d.getDate(),
+      //     year = d.getFullYear();
+
+      // if (month.length < 2)
+      //     month = '0' + month;
+      // if (day.length < 2)
+      //     day = '0' + day;
+
+      // return [year, month, day].join('-');
+      return date.toISOString();
+    }
+
+    let params = new HttpParams()
+      .set('from', formatDate(startDate))
+      .set('to', formatDate(endDate));
+    return this.httpClient.get<Todo[]>(this.API_URL, { params: params});
   }
 
   getTodoById(id: number): Observable<Todo> {

@@ -1,30 +1,18 @@
 <h2 class="content-block">Reminders</h2>
 
 
-<!-- <dx-scheduler
-  timeZone="America/Los_Angeles"
-  [dataSource]="appointmentsData"
-  [views]="['timelineDay', 'timelineWeek', 'timelineWorkWeek', 'timelineMonth']"
+<dx-scheduler
+  [dataSource]="dataSource"
+  [views]="['timelineWeek', 'timelineMonth']"
   currentView="timelineMonth"
   [firstDayOfWeek]="0"
-  [startDayHour]="8"
-  [endDayHour]="20"
+  [startDayHour]="0"
+  [endDayHour]="24"
   [cellDuration]="60"
-  [groups]="['priority']"
   [currentDate]="currentDate"
   [height]="580"
+  dateSerializationFormat="yyyy-MM-ddTHH:mm:ssZ"
+  startDateExpr="reminder"
 >
-  <dxi-resource
-    fieldExpr="ownerId"
-    [allowMultiple]="true"
-    [dataSource]="resourcesData"
-    label="Owner"
-    [useColorAsDefault]="true"
-  ></dxi-resource>
-  <dxi-resource
-    fieldExpr="priority"
-    [allowMultiple]="false"
-    [dataSource]="prioritiesData"
-    label="Priority"
-  ></dxi-resource>
-</dx-scheduler> -->
+
+</dx-scheduler>

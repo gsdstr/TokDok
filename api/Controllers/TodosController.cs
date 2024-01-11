@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api.Data;
 using api.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace api.Controllers
 {
@@ -21,11 +22,25 @@ namespace api.Controllers
             _context = context;
         }
 
+        
         // GET: api/Todos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoView>>> GetTodos()
+        public async Task<ActionResult<IEnumerable<TodoView>>> GetTodos(string? from, string? to)
         {
-            var todo = await _context.Todos.Include(e=> e.Tags).ToListAsync();
+            IQueryable<Todo> query = _context.Todos.Include(e => e.Tags);
+            //TODO check date "yyyy'-'MM'-'dd'
+            if (!string.IsNullOrEmpty(from))
+            {
+                var fromDT = DateTimeOffset.Parse(from).UtcDateTime;
+                query = query.Where(x => x.Reminder >= fromDT);
+            }
+            if (!string.IsNullOrEmpty(to))
+            {
+                var toDT = DateTimeOffset.Parse(to).UtcDateTime;
+                query = query.Where(x => x.Reminder <= toDT);
+            }
+
+            List<Todo> todo = await query.ToListAsync();
             return todo.ConvertAll(new Converter<Todo, TodoView>(TodoToTodoView));
         }
 
@@ -96,6 +111,7 @@ namespace api.Controllers
             }
 
             var todo = await TodoViewToTodoAsync(input);
+            _context.Attach(todo);
             _context.Entry(todo).State = EntityState.Modified;
 
             try
@@ -117,44 +133,8 @@ namespace api.Controllers
             return NoContent();
         }
 
-// TODO
+        // TODO
         // PATCH: api/Todos/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // [HttpPatch("{id}")]
-        // public async Task<IActionResult> PatchTodo(int id, Todo req)
-        // {
-        //     if (id != req.Id)
-        //     {
-        //         return BadRequest();
-        //     }
-
-        //     var data = JsonConvert.DeserializeObject<Todo>(req);
-        //     var todo = await _context.Todos.FindAsync(id);
-        //     if (todo == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     _context.Entry(todo).State = EntityState.Modified;
-        //     _context.Entry(todo).CurrentValues.SetValues(req);// = EntityState.Modified;
-
-        //     try
-        //     {
-        //         await _context.SaveChangesAsync();
-        //     }
-        //     catch (DbUpdateConcurrencyException)
-        //     {
-        //         if (!TodoExists(id))
-        //         {
-        //             return NotFound();
-        //         }
-        //         else
-        //         {
-        //             throw;
-        //         }
-        //     }
-
-        //     return NoContent();
-        // }
 
         // POST: api/Todos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
