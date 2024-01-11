@@ -60,30 +60,47 @@ namespace api.Controllers
 
         private async Task<Todo> TodoViewToTodoAsync(TodoView input)
         {
-            List<Tag> tags = [];
+            Todo? todo = null;
+            if (input.Id != 0){
+                todo = await _context.Todos.Include(e=> e.Tags).FirstOrDefaultAsync(e => e.Id == input.Id);
+            }
+            if ( todo == null || Equals(todo, default(Todo)))               
+            {
+                todo = new Todo
+                {
+                    Id = input.Id,
+                    Title = input.Title,
+                    IsComplete = input.IsComplete,
+                    Reminder = input.Reminder == null ? null : DateTimeOffset.Parse(input.Reminder).UtcDateTime
+                }; 
+            }
+            if (_context.Entry(todo).State == EntityState.Detached)
+            {
+                _context.Todos.Attach(todo);
+            }
+
+            todo.Tags.Clear();
             //TODO add AddIfNotExists in DbContextExtensions
             foreach ( string tagTitle in input.Tags )
             {
                 Tag? tag = await _context.Tag.FirstOrDefaultAsync(m => m.Title == tagTitle);
                 // doesn't exist - firstOrDefault() returns default
-                if ( tag == null || object.Equals(tag, default(Tag)))               
+                if ( tag == null || Equals(tag, default(Tag)))               
                 {
                     tag = new Tag
                     {
                         Title = tagTitle
                     };
                     _context.Tag.Add(tag);
+                } else {
+                    if (_context.Entry(tag).State == EntityState.Detached)
+                    {
+                        _context.Tag.Attach(tag);
+                    }
                 }
-                tags.Add( tag );
+                todo.Tags.Add( tag );
             }
-            return new Todo
-            {
-                Id = input.Id,
-                Title = input.Title,
-                IsComplete = input.IsComplete,
-                Tags = tags,
-                Reminder = input.Reminder == null ? null : DateTimeOffset.Parse(input.Reminder).UtcDateTime
-            };   
+            return todo;
         }
 
         // GET: api/Todos/5
@@ -111,9 +128,7 @@ namespace api.Controllers
             }
 
             var todo = await TodoViewToTodoAsync(input);
-            _context.Attach(todo);
             _context.Entry(todo).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -144,8 +159,8 @@ namespace api.Controllers
             var todo = await TodoViewToTodoAsync(input);
             _context.Todos.Add(todo);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetTodo), new { id = todo.Id }, todo);
+            var todoView = TodoToTodoView(todo);
+            return CreatedAtAction(nameof(GetTodo), new { id = todo.Id }, todoView);
         }
 
         // DELETE: api/Todos/5
