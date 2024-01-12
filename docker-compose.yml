@@ -19,11 +19,12 @@ services:
       context: ./web
       dockerfile: ./Dockerfile
     ports:
-      - "80:4200"
+      - "8080:4200"
 
   api:
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     build:
       context: ./api
       dockerfile: Dockerfile
@@ -35,7 +36,7 @@ services:
     image: tokdok/api
     restart: always
     ports:
-      - "8080:8080"
+      - "8012:8080"
     volumes:
       - api:/etc/api
       - logs:/var/log/api
@@ -52,6 +53,11 @@ services:
     restart: always
     volumes:
       - ./database/postgresql/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   api:

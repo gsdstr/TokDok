@@ -7,7 +7,7 @@ import { Tag } from '../models/tag';
   providedIn: 'root'
 })
 export class TagService {
-  private readonly API_URL = 'http://localhost:8080/api/Tags';
+  private readonly API_URL = 'http://localhost:8012/api/Tags';
   constructor(
     private readonly httpClient: HttpClient
   ) { }

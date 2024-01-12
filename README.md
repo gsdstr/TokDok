@@ -1,5 +1,11 @@
-# Server
+# Runing
 
-`docker build . -t tokdok_api`
+Use docker version 4 or higher
 
-`docker run -p 8080:8080 tokdok_api`
+Run 
+
+`docker-compose up -d`
+
+and open
+
+http://localhost:8080/

@@ -64,6 +64,7 @@
   <div *dxTemplate="let cellInfo of 'tagBoxEditor'">
     <dx-tag-box
       [dataSource]="tags"
+      [value]="cellInfo.value"
       [showSelectionControls]="true"
       [maxDisplayedTags]="3"
       [showMultiTagOnly]="false"
@@ -72,6 +73,8 @@
       [searchEnabled]="true"
       (onValueChanged)="cellInfo.setValue($event.value)"
       (onSelectionChanged)="cellInfo.component.updateDimensions()"
+      [acceptCustomValue]="true"
+      (onCustomItemCreating)="onCustomItemCreating($event)"
     >
     </dx-tag-box>
   </div>

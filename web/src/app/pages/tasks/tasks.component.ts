@@ -9,6 +9,7 @@ import { TodoService } from '../../services/todo.service';
 import { Todo } from '../../models/todo';
 import { TagService } from '../../services/tag.service';
 import { Tag } from '../../models/tag';
+import { CustomItemCreatingEvent } from 'devextreme/ui/tag_box';
 
 @Component({
   templateUrl: 'tasks.component.html',
@@ -16,6 +17,7 @@ import { Tag } from '../../models/tag';
   imports: [DxDataGridModule, DxFormModule, CommonModule, DxLoadPanelModule, DxTagBoxModule]
 })
 export class TasksComponent {
+
   dataSource: any;
   priority: any[];
 
@@ -80,7 +82,7 @@ export class TasksComponent {
     })
   }
 
-  onSaving(e: any) { 
+  onSaving(e: any) {
     const change = e.changes[0];
 
     // if(change) {
@@ -114,4 +116,15 @@ export class TasksComponent {
     container.textContent = text || noBreakSpace;
     container.title = text;
   }
+
+  onCustomItemCreating(args: CustomItemCreatingEvent) {
+    const newValue = args.text;
+    if (!newValue) return;
+    const isItemInDataSource = this.tags.some((item) => item === newValue);
+    if (!isItemInDataSource) {
+      this.tags.unshift(newValue);
+    }
+    args.customItem = newValue;
+  }
+
 }

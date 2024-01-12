@@ -66,18 +66,17 @@ namespace api.Controllers
             }
             if ( todo == null || Equals(todo, default(Todo)))               
             {
-                todo = new Todo
-                {
-                    Id = input.Id,
-                    Title = input.Title,
-                    IsComplete = input.IsComplete,
-                    Reminder = input.Reminder == null ? null : DateTimeOffset.Parse(input.Reminder).UtcDateTime
-                }; 
+                todo = new Todo();
             }
             if (_context.Entry(todo).State == EntityState.Detached)
             {
                 _context.Todos.Attach(todo);
             }
+
+            todo.Id = input.Id;
+            todo.Title = input.Title;
+            todo.IsComplete = input.IsComplete;
+            todo.Reminder = input.Reminder == null ? null : DateTimeOffset.Parse(input.Reminder).UtcDateTime;
 
             todo.Tags.Clear();
             //TODO add AddIfNotExists in DbContextExtensions
